@@ -72,16 +72,17 @@ void enqueue(Queue *queue, char *name, char *id, char *service, char *pLevel) {
   queue->size++;
 }
 
-void dequeue(Queue *queue) {
-  Node *temp_pointer = queue->head;
-  Node *completed_list = malloc(sizeof(Node));
+Node *dequeue(Queue *queue) {
   if (queue->head == NULL) {
     printf("No Data in the waiting queue\n");
-  } else {
-    queue->head = queue->head->next;
-    completed_list = temp_pointer;
-    free(temp_pointer);
+    return NULL;
   }
+  Node *temp_pointer = queue->head;
+
+  queue->head = queue->head->next;
+
+  queue->size--;
+  return temp_pointer;
 }
 
 void displayWaitingList(Queue *queue) {
@@ -116,7 +117,7 @@ LinkedList *create_list() {
 }
 
 void displayServedList(LinkedList *served_list) {
-  if (served_list->size == 0) {
+  if (served_list->size == 0 || served_list->root == NULL) {
     printf("No Data\n");
   }
 
@@ -124,17 +125,12 @@ void displayServedList(LinkedList *served_list) {
   Node *curr = served_list->root;
 
   while (curr != NULL) {
-    printf("%d. %s %s %s %s\n", i, curr->student_name, curr->student_id,
-           curr->service_type, curr->priority_level);
+    printf("%d. %s %s %s Completed\n", i, curr->student_name, curr->student_id,
+           curr->service_type);
     curr = curr->next;
     i++;
   }
 }
-
-// void display_size(Queue *queue) {
-//   int size_queue = queue->size;
-//   printf("%d\n", size_queue);
-// }
 
 void addNewStudent(Queue *queue) {
 
@@ -162,14 +158,45 @@ void addNewStudent(Queue *queue) {
   enqueue(queue, name, id, service, pLevel);
 }
 
-void serveNextStudent(LinkedList *served_list) {}
+void serveNextStudent(LinkedList *served_list, Queue *queue) {
+  Node *new_node = dequeue(queue);
+  if (new_node == NULL) {
+    exit(1);
+  }
 
+  new_node->next = served_list->root;
+  served_list->root = new_node;
+  served_list->size++;
+
+  printf("Student %s successfully served!\n", new_node->student_name);
+}
+
+void searchCompletedService(LinkedList *served_list) {
+  char input[11];
+  printf("Enter ID of completed service: ");
+  scanf("%s", input);
+
+  int found = 0;
+
+  for (Node *curr = served_list->root; curr != NULL; curr = curr->next) {
+    if (strcmp(curr->student_id, input) == 0) {
+      printf("ID Found!\n");
+      printf("%s %s %s Completed\n", curr->student_name, curr->student_id,
+             curr->service_type);
+      found = 1;
+    }
+  }
+
+  if (found == 0) {
+    printf("Could not find completed service\n");
+  }
+}
 int main() {
 
   int choice;
 
   Queue *waiting_queue = create_queue();
-  Node *served_list = create_list();
+  LinkedList *served_list = create_list();
 
   do {
     printf("\n\n");
@@ -190,7 +217,7 @@ int main() {
       addNewStudent(waiting_queue);
       break;
     case 2:
-      dequeue(waiting_queue);
+      serveNextStudent(served_list, waiting_queue);
       break;
     case 3:
       displayWaitingList(waiting_queue);
@@ -199,7 +226,7 @@ int main() {
       displayServedList(served_list);
       break;
     case 5:
-      printf("choice 2");
+      searchCompletedService(served_list);
       break;
     case 6:
       printf("choice 2");

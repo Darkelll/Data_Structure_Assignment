@@ -116,6 +116,92 @@ LinkedList *create_list() {
   return served_list;
 }
 
+typedef struct Stack {
+  Node *top;
+  int size;
+} Stack;
+
+Stack *create_stack() {
+  Stack *stack = malloc(sizeof(Stack));
+  stack->top = NULL;
+  stack->size = 0;
+
+  return stack;
+}
+
+void push(Stack *stack, Node *served_node) {
+  if (served_node == NULL) {
+    return;
+  }
+  Node *new_node_stack = malloc(sizeof(Node));
+  if (new_node_stack == NULL) {
+    printf("Stack Overflow,Out of memory!\n");
+    return;
+  }
+
+  strcpy(new_node_stack->student_id, served_node->student_id);
+  strcpy(new_node_stack->student_name, served_node->student_name);
+  strcpy(new_node_stack->service_type, served_node->service_type);
+  strcpy(new_node_stack->priority_level, served_node->priority_level);
+
+  new_node_stack->next = stack->top;
+
+  stack->top = new_node_stack;
+  stack->size++;
+}
+
+void removeFromLinkedList(LinkedList *served_list, char *student_id) {
+  if (served_list->root == NULL) {
+    exit(1);
+  }
+
+  Node *curr = served_list->root;
+  Node *prev = NULL;
+
+  // Loop and compare student ID in linked List
+  while (curr != NULL) {
+    if (strcmp(curr->student_id, student_id) == 0) { // if match found
+      if (prev == NULL) {
+        served_list->root = curr->next;
+      } else {
+        prev->next = curr->next;
+      }
+
+      free(curr);
+      served_list->size--;
+      return;
+    }
+
+    prev = curr;
+    curr = curr->next;
+  }
+}
+
+void undoService(Stack *stack, LinkedList *served_list, Queue *queue) {
+  if (stack->top == NULL) {
+    printf("No previus data\n");
+    return;
+  }
+
+  // hold top element of stack
+  Node *popped_stack_node = stack->top;
+
+  stack->top = stack->top->next;
+  stack->size--;
+
+  // destroy the record of service in linked list
+  removeFromLinkedList(served_list, popped_stack_node->student_id);
+
+  enqueue(queue, popped_stack_node->student_name, popped_stack_node->student_id,
+          popped_stack_node->service_type, popped_stack_node->priority_level);
+
+  printf("Undo Successful!\n");
+  printf("The following student has been returned to the waiting queue:\n");
+  printf("%s %s %s\n", popped_stack_node->student_id,
+         popped_stack_node->student_name, popped_stack_node->service_type);
+  free(popped_stack_node);
+}
+
 void displayServedList(LinkedList *served_list) {
   if (served_list->size == 0 || served_list->root == NULL) {
     printf("No Data\n");
@@ -158,7 +244,8 @@ void addNewStudent(Queue *queue) {
   enqueue(queue, name, id, service, pLevel);
 }
 
-void serveNextStudent(LinkedList *served_list, Queue *queue) {
+void serveNextStudent(LinkedList *served_list, Queue *queue,
+                      Stack *undo_stack) {
   Node *new_node = dequeue(queue);
   if (new_node == NULL) {
     exit(1);
@@ -167,6 +254,8 @@ void serveNextStudent(LinkedList *served_list, Queue *queue) {
   new_node->next = served_list->root;
   served_list->root = new_node;
   served_list->size++;
+
+  push(undo_stack, new_node);
 
   printf("Student %s successfully served!\n", new_node->student_name);
 }
@@ -197,6 +286,7 @@ int main() {
 
   Queue *waiting_queue = create_queue();
   LinkedList *served_list = create_list();
+  Stack *undo_stack = create_stack();
 
   do {
     printf("\n\n");
@@ -217,7 +307,7 @@ int main() {
       addNewStudent(waiting_queue);
       break;
     case 2:
-      serveNextStudent(served_list, waiting_queue);
+      serveNextStudent(served_list, waiting_queue, undo_stack);
       break;
     case 3:
       displayWaitingList(waiting_queue);
@@ -229,7 +319,7 @@ int main() {
       searchCompletedService(served_list);
       break;
     case 6:
-      printf("choice 2");
+      undoService(undo_stack, served_list, waiting_queue);
       break;
     case 7:
       printf("choice 2");

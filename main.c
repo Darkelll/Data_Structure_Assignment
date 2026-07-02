@@ -27,6 +27,7 @@
 8. Exit
 Enter your choice*/
 
+// Node Struct
 typedef struct Node {
   char student_name[50];
   char student_id[11];
@@ -35,12 +36,14 @@ typedef struct Node {
   struct Node *next;
 } Node;
 
+// Queue
 typedef struct Queue {
   Node *head;
   Node *tail;
   int size;
 } Queue;
 
+// Queue init for main
 Queue *create_queue() {
   Queue *queue = malloc(sizeof(Queue));
 
@@ -50,6 +53,35 @@ Queue *create_queue() {
 
   return queue;
 };
+
+// Linked List
+typedef struct LinkedList {
+  Node *root;
+  int size;
+} LinkedList;
+
+// Init do not need to repeat why
+LinkedList *create_list() {
+  LinkedList *served_list = malloc(sizeof(LinkedList));
+  served_list->root = NULL;
+  served_list->size = 0;
+
+  return served_list;
+}
+
+// Stack
+typedef struct Stack {
+  Node *top;
+  int size;
+} Stack;
+
+Stack *create_stack() {
+  Stack *stack = malloc(sizeof(Stack));
+  stack->top = NULL;
+  stack->size = 0;
+
+  return stack;
+}
 
 void enqueue(Queue *queue, char *name, char *id, char *service, char *pLevel) {
   Node *new_node = malloc(sizeof(Node));
@@ -101,32 +133,8 @@ void displayWaitingList(Queue *queue) {
     curr = curr->next;
     i++;
   }
-}
 
-typedef struct LinkedList {
-  Node *root;
-  int size;
-} LinkedList;
-
-LinkedList *create_list() {
-  LinkedList *served_list = malloc(sizeof(LinkedList));
-  served_list->root = NULL;
-  served_list->size = 0;
-
-  return served_list;
-}
-
-typedef struct Stack {
-  Node *top;
-  int size;
-} Stack;
-
-Stack *create_stack() {
-  Stack *stack = malloc(sizeof(Stack));
-  stack->top = NULL;
-  stack->size = 0;
-
-  return stack;
+  free(curr);
 }
 
 void push(Stack *stack, Node *served_node) {
@@ -280,6 +288,14 @@ void searchCompletedService(LinkedList *served_list) {
     printf("Could not find completed service\n");
   }
 }
+
+void displaySummary(Queue *queue, LinkedList *served_list, Stack *stack) {
+  printf(" - Current Waiting Students : %d\n", queue->size);
+  printf(" - Total Students Served    : %d\n", served_list->size);
+  printf(" - Actions Available to Undo: %d\n", stack->size);
+  printf(" - Total System Volume      : %d\n",
+         (served_list->size + served_list->size));
+}
 int main() {
 
   int choice;
@@ -322,7 +338,7 @@ int main() {
       undoService(undo_stack, served_list, waiting_queue);
       break;
     case 7:
-      printf("choice 2");
+      displaySummary(waiting_queue, served_list, undo_stack);
       break;
     case 8:
       break;

@@ -25,8 +25,7 @@ To receive full credit, the system must adhere strictly to the following paramet
 - **Implementation Style:** The entire data management engine must be built **manually** from scratch using fundamental building blocks:
   - `struct` definitions for data modeling.
   - Pointers for memory management and linking.
-  - Custom functions for encapsulated business logic.
-  - Dynamic memory allocation (`malloc`, `calloc`, `free`) to manage memory lifecycles seamlessly and prevent memory leaks.
+  - Dynamic memory allocation (`malloc`, `free`) to manage memory lifecycles seamlessly and prevent memory leaks.
 - **Collaboration Constraints:** Form a group of **3 to 5 members** (subject to lecturer confirmation).
 - **Submission Deadline:** **03/07/2026**. Late submissions are penalized per course policy.
 
@@ -48,7 +47,6 @@ The system leverages three distinctive abstract data types (ADTs), each carefull
   - _Enqueue:_ Add a incoming student request to the rear of the queue.
   - _Dequeue:_ Remove the student at the front of the queue when a staff member becomes available to serve them.
   - _Display:_ Print out a sequential list of all currently waiting students with their associated metadata.
-  - _IsEmpty Check:_ Prevent underflow exceptions during dequeue operations.
 
 ### B. Completed Service Linked List (Sequential Log)
 
@@ -57,7 +55,7 @@ The system leverages three distinctive abstract data types (ADTs), each carefull
   - Student ID
   - Student Name
   - Service Type
-  - Service Status (Hardcoded or updated to `Completed`)
+  - Service Status
 - **Core Operational Requirements:**
   - _Insert:_ Append or prepend a newly completed service record transferred directly from the waiting queue.
   - _Display All:_ Sequentially traverse and print every completed record currently recorded in the system logs.
@@ -69,9 +67,7 @@ The system leverages three distinctive abstract data types (ADTs), each carefull
 - **Purpose:** Tracks recently completed services to handle mistakes, facilitating an instant error-correction mechanism.
 - **Core Operational Requirements:**
   - _Push:_ When a student is served, their transaction node must be pushed onto the stack concurrently with its insertion into the completed linked list.
-  - _Pop:_ Remove the top element when an undo command is executed.
-  - _Peek:_ Check the most recent completed transaction without extracting it.
-  - _IsEmpty Check:_ Validate state before performing peek/pop actions.
+  - _removeelement:_ Remove the top element when an undo command is executed.
 
 ---
 
@@ -135,10 +131,3 @@ The single, consolidated group submission package must be typewritten and sequen
 - [ ] **8. Fragmented Individual Complexities:** Independent, clearly demarcated analysis sections for every single team member.
 - [ ] **9. Appendix / Grading Rubrics:** Append any requested assignment assessment rubric layouts.
       \"\"\"
-
-# Save to a markdown file
-
-with open("Student_Service_Centre_Project_Specification.md", "w", encoding="utf-8") as file:
-file.write(markdown_content)
-
-print("Markdown file successfully generated.")

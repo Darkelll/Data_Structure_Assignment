@@ -84,6 +84,53 @@ void dequeue(Queue *queue) {
   }
 }
 
+void displayWaitingList(Queue *queue) {
+
+  if (queue->head == NULL) {
+    printf("No Data\n");
+  }
+
+  int i = 1;
+
+  Node *curr = queue->head;
+
+  while (curr != NULL) {
+    printf("%d. %s %s %s %s\n", i, curr->student_name, curr->student_id,
+           curr->service_type, curr->priority_level);
+    curr = curr->next;
+    i++;
+  }
+}
+
+typedef struct LinkedList {
+  Node *root;
+  int size;
+} LinkedList;
+
+LinkedList *create_list() {
+  LinkedList *served_list = malloc(sizeof(LinkedList));
+  served_list->root = NULL;
+  served_list->size = 0;
+
+  return served_list;
+}
+
+void displayServedList(LinkedList *served_list) {
+  if (served_list->size == 0) {
+    printf("No Data\n");
+  }
+
+  int i = 1;
+  Node *curr = served_list->root;
+
+  while (curr != NULL) {
+    printf("%d. %s %s %s %s\n", i, curr->student_name, curr->student_id,
+           curr->service_type, curr->priority_level);
+    curr = curr->next;
+    i++;
+  }
+}
+
 // void display_size(Queue *queue) {
 //   int size_queue = queue->size;
 //   printf("%d\n", size_queue);
@@ -115,11 +162,14 @@ void addNewStudent(Queue *queue) {
   enqueue(queue, name, id, service, pLevel);
 }
 
+void serveNextStudent(LinkedList *served_list) {}
+
 int main() {
 
   int choice;
 
   Queue *waiting_queue = create_queue();
+  Node *served_list = create_list();
 
   do {
     printf("\n\n");
@@ -146,7 +196,7 @@ int main() {
       displayWaitingList(waiting_queue);
       break;
     case 4:
-      // displayServedList(served_list);
+      displayServedList(served_list);
       break;
     case 5:
       printf("choice 2");
@@ -158,7 +208,6 @@ int main() {
       printf("choice 2");
       break;
     case 8:
-      return 0;
       break;
     default:
       printf("Please pick enter correct number\n");
